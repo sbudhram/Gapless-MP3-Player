@@ -15,7 +15,7 @@
 #import <OpenAL/al.h>
 #import <OpenAL/alc.h> 
 
-#define AUDIO_PLAYER_EVENT_SOUND_DONE @"eventAudioPlayerSoundDone"]
+#define AUDIO_PLAYER_EVENT_SOUND_DONE @"eventAudioPlayerSoundDone"] 
 
 // There are some limitations on sound that should be played in a queue:
 //    - They should have the same format
