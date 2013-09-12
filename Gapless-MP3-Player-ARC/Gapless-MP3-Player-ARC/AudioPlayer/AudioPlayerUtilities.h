@@ -119,7 +119,7 @@ static void AQPropertyListenerProc (void *inUserData, AudioQueueRef inAQ, AudioQ
 static void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef inCompleteAQBuffer)
 {
     SoundDescription *sound = currentSoundDescription((__bridge SoundQueue*)inUserData);
-    if(sound->isDone) return;
+    if(sound == nil || sound->isDone) return;
     
     UInt32 numBytes;
     UInt32 nPackets = sound->numPacketsToRead;
