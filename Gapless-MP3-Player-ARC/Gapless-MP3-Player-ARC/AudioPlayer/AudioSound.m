@@ -50,9 +50,15 @@
 
 -(void)seekToTime:(double)seek {
     
+    UInt64 totalPackets;
+    UInt32 propertySize = sizeof(totalPackets);
+
+    //Get the total number of packets in the file.
+    AudioFileGetProperty(_soundDescription.playbackFile, kAudioFilePropertyAudioDataPacketCount, &propertySize, &totalPackets);
+    
     Float64 mPacketsPerSecond = _soundDescription.dataFormat.mSampleRate / _soundDescription.dataFormat.mFramesPerPacket;
     Float64 packetsToTime = seek * mPacketsPerSecond;
-    _soundDescription.packetPosition = (SInt64)round(packetsToTime);
+    _soundDescription.packetPosition = (SInt64)round(packetsToTime) % totalPackets;
 }
 
 - (void)dealloc
