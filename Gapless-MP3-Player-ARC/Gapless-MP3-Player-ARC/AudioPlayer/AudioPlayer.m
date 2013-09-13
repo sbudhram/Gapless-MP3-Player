@@ -281,7 +281,11 @@ static AudioPlayer *sharedAudioPlayer = nil;
             totalPlayTime = timestamp.mSampleTime / _currentSound.soundDescription.dataFormat.mSampleRate;
         }
     }
-    return  totalPlayTime;
+    
+    //There is an inherent delay of .125 seconds in this time.
+    // At some point it would be a good idea to figure out why this is
+    // happening... but for now, just add it to the offset.
+    return  totalPlayTime + .125;
 }
 
 - (NSTimeInterval)currentSoundPlayTime {
