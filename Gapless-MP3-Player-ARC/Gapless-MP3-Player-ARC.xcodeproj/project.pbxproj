@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1476841B17E294D800B926A3 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1476841917E294D800B926A3 /* AudioPlayer.m */; };
+		1476841C17E294D800B926A3 /* AudioPlayerUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 1476841A17E294D800B926A3 /* AudioPlayerUtilities.m */; };
 		8BA9DFC617C90C5C0069A6A8 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA9DFC517C90C5C0069A6A8 /* CoreAudio.framework */; };
 		8BA9DFC817C90C790069A6A8 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA9DFC717C90C790069A6A8 /* AudioToolbox.framework */; };
 		8BA9DFCA17C90C7F0069A6A8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA9DFC917C90C7F0069A6A8 /* CoreFoundation.framework */; };
-		8BA9DFCE17C910AC0069A6A8 /* SoundQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BA9DFCD17C910AC0069A6A8 /* SoundQueue.m */; };
 		8BA9DFD117C9180B0069A6A8 /* AudioSound.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BA9DFD017C9180B0069A6A8 /* AudioSound.m */; };
-		8BA9DFD417C9187F0069A6A8 /* AudioPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8BA9DFD317C9187F0069A6A8 /* AudioPlayer.mm */; };
 		8BA9DFD817C95C520069A6A8 /* mus_main_title_01_lp.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8BA9DFD517C95C520069A6A8 /* mus_main_title_01_lp.mp3 */; };
 		8BA9DFD917C95C520069A6A8 /* mus_main_title_02_nl.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8BA9DFD617C95C520069A6A8 /* mus_main_title_02_nl.mp3 */; };
 		8BA9DFDA17C95C520069A6A8 /* mus_main_title_03_lp.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8BA9DFD717C95C520069A6A8 /* mus_main_title_03_lp.mp3 */; };
@@ -32,16 +32,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1476841917E294D800B926A3 /* AudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioPlayer.m; path = AudioPlayer/AudioPlayer.m; sourceTree = "<group>"; };
+		1476841A17E294D800B926A3 /* AudioPlayerUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioPlayerUtilities.m; path = AudioPlayer/AudioPlayerUtilities.m; sourceTree = "<group>"; };
 		8BA9DFC517C90C5C0069A6A8 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		8BA9DFC717C90C790069A6A8 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		8BA9DFC917C90C7F0069A6A8 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		8BA9DFCB17C90E710069A6A8 /* AudioPlayerUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioPlayerUtilities.h; path = AudioPlayer/AudioPlayerUtilities.h; sourceTree = "<group>"; };
-		8BA9DFCC17C910AC0069A6A8 /* SoundQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundQueue.h; path = AudioPlayer/SoundQueue.h; sourceTree = "<group>"; };
-		8BA9DFCD17C910AC0069A6A8 /* SoundQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SoundQueue.m; path = AudioPlayer/SoundQueue.m; sourceTree = "<group>"; };
 		8BA9DFCF17C9180B0069A6A8 /* AudioSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioSound.h; path = AudioPlayer/AudioSound.h; sourceTree = "<group>"; };
 		8BA9DFD017C9180B0069A6A8 /* AudioSound.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioSound.m; path = AudioPlayer/AudioSound.m; sourceTree = "<group>"; };
 		8BA9DFD217C9187F0069A6A8 /* AudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioPlayer.h; path = AudioPlayer/AudioPlayer.h; sourceTree = "<group>"; };
-		8BA9DFD317C9187F0069A6A8 /* AudioPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioPlayer.mm; path = AudioPlayer/AudioPlayer.mm; sourceTree = "<group>"; };
 		8BA9DFD517C95C520069A6A8 /* mus_main_title_01_lp.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = mus_main_title_01_lp.mp3; path = "Demo music/mus_main_title_01_lp.mp3"; sourceTree = SOURCE_ROOT; };
 		8BA9DFD617C95C520069A6A8 /* mus_main_title_02_nl.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = mus_main_title_02_nl.mp3; path = "Demo music/mus_main_title_02_nl.mp3"; sourceTree = SOURCE_ROOT; };
 		8BA9DFD717C95C520069A6A8 /* mus_main_title_03_lp.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = mus_main_title_03_lp.mp3; path = "Demo music/mus_main_title_03_lp.mp3"; sourceTree = SOURCE_ROOT; };
@@ -96,13 +95,12 @@
 		8BA9DFBB17C90A890069A6A8 /* Audio player */ = {
 			isa = PBXGroup;
 			children = (
-				8BA9DFCB17C90E710069A6A8 /* AudioPlayerUtilities.h */,
-				8BA9DFCC17C910AC0069A6A8 /* SoundQueue.h */,
-				8BA9DFCD17C910AC0069A6A8 /* SoundQueue.m */,
+				8BA9DFD217C9187F0069A6A8 /* AudioPlayer.h */,
+				1476841917E294D800B926A3 /* AudioPlayer.m */,
 				8BA9DFCF17C9180B0069A6A8 /* AudioSound.h */,
 				8BA9DFD017C9180B0069A6A8 /* AudioSound.m */,
-				8BA9DFD217C9187F0069A6A8 /* AudioPlayer.h */,
-				8BA9DFD317C9187F0069A6A8 /* AudioPlayer.mm */,
+				8BA9DFCB17C90E710069A6A8 /* AudioPlayerUtilities.h */,
+				1476841A17E294D800B926A3 /* AudioPlayerUtilities.m */,
 			);
 			name = "Audio player";
 			sourceTree = "<group>";
@@ -241,9 +239,9 @@
 				8BEB3BBA17C9071900C5CDAA /* main.m in Sources */,
 				8BEB3BBE17C9071900C5CDAA /* AppDelegate.m in Sources */,
 				8BEB3BCD17C9071900C5CDAA /* ViewControllerARC.m in Sources */,
-				8BA9DFCE17C910AC0069A6A8 /* SoundQueue.m in Sources */,
 				8BA9DFD117C9180B0069A6A8 /* AudioSound.m in Sources */,
-				8BA9DFD417C9187F0069A6A8 /* AudioPlayer.mm in Sources */,
+				1476841B17E294D800B926A3 /* AudioPlayer.m in Sources */,
+				1476841C17E294D800B926A3 /* AudioPlayerUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
