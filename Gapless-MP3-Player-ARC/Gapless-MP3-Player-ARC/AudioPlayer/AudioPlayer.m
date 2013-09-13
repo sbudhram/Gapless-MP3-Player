@@ -35,6 +35,7 @@ static AudioPlayer *sharedAudioPlayer = nil;
     self.queue = nil;
     self.volume = 1.0f;
     self.mMasterVolume = 1.0f;
+
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stop) name:APEVENT_QUEUE_DONE object:self];
     return self;
@@ -99,14 +100,17 @@ static AudioPlayer *sharedAudioPlayer = nil;
 - (void)playQueue
 {
     if(_queue != nil) return; // Another queue is already playing
-    if(_soundQueue.count == 0) return; // No sounds in the queue
+    if(_soundQueue.count == 0)
+        return; // No sounds in the queue
+    else
+        self.currentSound = _soundQueue[0];
     
     if(_mFadeTimer)
     {
         [_mFadeTimer invalidate];
         self.mFadeTimer = nil;
     }
-        
+    
     // Check if all sounds in the queue have the same format and parameters
     AudioStreamBasicDescription *ethalonDesc = &self.currentSound.description->dataFormat;
     for (AudioSound *item in _soundQueue) {
@@ -159,9 +163,10 @@ static AudioPlayer *sharedAudioPlayer = nil;
     NSLock *lock = [[NSLock alloc] init];
     if([lock tryLock])
     {
+
         _isPlaying = NO;
         if(_queue == nil) return;
-
+        
         CheckError(AudioQueueRemovePropertyListener(_queue, kAudioQueueProperty_IsRunning, AQPropertyListenerProc, (__bridge void *)(self)), "AudioQueueRemovePropertyListener failed");
         CheckError(AudioQueueFlush(_queue), "AudioQueueFlush failed");
         CheckError(AudioQueueStop(_queue, YES), "AudioQueueStop failed");
@@ -246,11 +251,8 @@ static AudioPlayer *sharedAudioPlayer = nil;
     return _mMasterVolume;
 }
 
--(AudioSound*)currentSound {
-    if ([_soundQueue count]>0)
-        return _soundQueue[0];
-    else
-        return nil;
+-(NSUInteger)currentItemNumber {
+    return [_soundQueue indexOfObject:_currentSound];
 }
 
 @end

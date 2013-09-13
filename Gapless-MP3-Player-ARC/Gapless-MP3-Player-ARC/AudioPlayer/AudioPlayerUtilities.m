@@ -130,11 +130,13 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
         {
             // Done with this sound
             AudioPlayer *player = (__bridge AudioPlayer*)inUserData;
-            [player.soundQueue removeObject:player.currentSound];
             
             // Move to the next sound (if any)
-            if (player.soundQueue.count > 0) {
+            NSUInteger index = [player currentItemNumber];
+            if ([player.soundQueue count] > index+1) {
 
+                player.currentSound = player.soundQueue[index+1];
+                
                 // Copy new magic cookie to the queue
                 CopyEncoderCookieToQueue(currentSoundDescription(player)->playbackFile, inAQ);
                 

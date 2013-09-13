@@ -26,6 +26,7 @@
 
 @property (nonatomic) AudioQueueRef queue;
 @property (nonatomic) NSMutableArray *soundQueue;
+@property (nonatomic) AudioSound *currentSound;
 @property (nonatomic, readonly) BOOL isPaused;      //Paused by the user
 @property (nonatomic, readonly) BOOL isPlaying;     //TRUE if if state is between playQueue and stop (even if audio is paused)
 @property (nonatomic) float volume;
@@ -55,6 +56,7 @@
 - (void)clearQueue;
 
 - (AudioSound*)currentSound;
+- (NSUInteger)currentItemNumber;
 
 // Control player
 - (void)playQueue;
