@@ -11,9 +11,10 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 #import "AudioPlayerUtilities.h"
-#import "AudioSound.h"
 #import <OpenAL/al.h>
 #import <OpenAL/alc.h> 
+
+@class AudioSound;
 
 #define AUDIO_PLAYER_EVENT_SOUND_DONE @"eventAudioPlayerSoundDone"] 
 
@@ -21,49 +22,46 @@
 //    - They should have the same format
 //    - Their internal structure should be the same
 
-@interface AudioPlayer : NSObject {
-    SoundQueue *soundQueue;
-    NSMutableArray *sounds;
-    bool isPaused;
-    float volume;
-    
-    AudioQueueRef queue;
-    
-    // Fade parameters
-    NSTimer *mFadeTimer;
-    float mFadeSVol, mFadeEVol, mFadeSeconds;
-    NSTimeInterval mTimestamp;
-    float mMasterVolume;
-}
-@property (nonatomic, assign) float volume;
-@property (nonatomic, readonly) bool isPaused;
+@interface AudioPlayer : NSObject
+
+@property (nonatomic) AudioQueueRef queue;
+@property (nonatomic) NSMutableArray *soundQueue;
+@property (nonatomic, readonly) BOOL isPaused;      //Paused by the user
+@property (nonatomic, readonly) BOOL isPlaying;     //TRUE if if state is between playQueue and stop (even if audio is paused)
+@property (nonatomic) float volume;
+
+//Fade Parameters
+@property (nonatomic) NSTimer *mFadeTimer;
+@property (nonatomic) float mFadeSVol, mFadeEVol, mFadeSeconds;
+@property (nonatomic) NSTimeInterval mTimestamp;
+@property (nonatomic) float mMasterVolume;
 
 // Create queue
 + (AudioPlayer*)defaultPlayer;
 
 // Manage audio queue
-
+// Loop indicates how many times to loop the segment (-1 == infinite)
+// Seek is the number of seconds to offset into the segment for the initial playthrough.
+//  It is an error if the seek offset is greater than the length of the segment.
 - (void)addSoundFromFile:(NSString*)filename;
 - (void)addSoundFromFile:(NSString*)filename loop:(int)loop;
+- (void)addSoundFromFile:(NSString*)filename loop:(int)loop seek:(double)time;
 
-// You can create AudioSound by yourself, but the player will not manage their release. It will be up to you.
+// You can create AudioSound by yourself with these functions
 - (void)addSound:(AudioSound*)sound;
 - (void)addSound:(AudioSound*)sound loop:(int)loop;
+- (void)addSound:(AudioSound*)sound loop:(int)loop seek:(double)time;
 
 - (void)clearQueue;
+
+- (AudioSound*)currentSound;
 
 // Control player
 - (void)playQueue;
 - (void)stop;
-
 - (void)pause;
 - (void)resume;
-
 - (void)breakLoop;
-
-// Get player state
-- (int)currentItemNumber;
-- (bool)isPlaying;
 
 // Change sound volume over time
 - (void)fadeFrom:(float)s_vol to:(float)e_vol duration:(float)seconds;
