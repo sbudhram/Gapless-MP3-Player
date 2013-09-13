@@ -1,3 +1,12 @@
+IMPORTANT NOTE:
+==================
+This version is forked from emotionray's version.  In a nutshell, it works the same, but there are a number of
+internal structural changes aimed at simplifying the code and taking advantage of Objective C's newest compiler
+constructs.
+
+This version also adds support for seeking to a specific location for any file in the queue.
+
+
 Gapless MP3 Player
 ==================
 
