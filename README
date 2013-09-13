@@ -1,4 +1,4 @@
-IMPORTANT NOTE:
+IMPORTANT FORK NOTE:
 ==================
 This version is forked from emotionray's version.  In a nutshell, it works the same, but there are a number of
 internal structural changes aimed at simplifying the code and taking advantage of Objective C's newest compiler
