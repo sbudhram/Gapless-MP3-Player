@@ -128,9 +128,6 @@ static AudioPlayer *sharedAudioPlayer = nil;
             NSLog(@"Sound in the queue is different from the rest. Can't play the queue.");
             return;
         }
-        
-        //Otherwise, it is valid.  Rewind to start.
-        item.description->packetPosition = 0;
     }
     
     CheckError(AudioQueueNewOutput(ethalonDesc, AQOutputCallback, (__bridge void *)(self), NULL, NULL, 0, &_queue), "AudioQueueNewOutput failed");
@@ -179,6 +176,12 @@ static AudioPlayer *sharedAudioPlayer = nil;
         
         CheckError(AudioQueueDispose(_queue, YES), "AudioQueueDispose failed");
         self.queue = nil;
+        
+        //Rewind all packets to start
+        for (AudioSound *item in _soundQueue)
+            item.description->packetPosition = 0;
+
+        
         [lock unlock];
     }
 }

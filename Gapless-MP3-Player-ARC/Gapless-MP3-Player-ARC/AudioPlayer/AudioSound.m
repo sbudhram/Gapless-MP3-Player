@@ -50,6 +50,9 @@
 
 -(void)seekToTime:(double)seek {
     
+    Float64 mPacketsPerSecond = _soundDescription.dataFormat.mSampleRate / _soundDescription.dataFormat.mFramesPerPacket;
+    Float64 packetsToTime = seek * mPacketsPerSecond;
+    _soundDescription.packetPosition = (SInt64)round(packetsToTime);
 }
 
 - (void)dealloc
