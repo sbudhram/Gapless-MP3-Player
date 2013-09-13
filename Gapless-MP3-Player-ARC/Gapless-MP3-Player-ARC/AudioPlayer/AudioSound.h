@@ -11,11 +11,15 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "AudioPlayerUtilities.h"
 
+@class AudioPlayer;
+
 @interface AudioSound : NSObject
 
 @property (nonatomic) SoundDescription soundDescription;
-@property (nonatomic) NSTimeInterval mSoundDuration;
+@property (nonatomic) NSString *filename;
+@property (nonatomic) Float64 mSoundDuration;
 @property (nonatomic) NSUInteger loopCount;
+@property (nonatomic, weak) AudioPlayer *player;
 
 - (id)initWithSoundFile:(NSString*)filename;
 - (void)loadSoundFile:(NSString*)filename;

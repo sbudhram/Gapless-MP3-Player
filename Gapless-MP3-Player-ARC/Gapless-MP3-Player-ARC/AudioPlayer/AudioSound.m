@@ -21,6 +21,8 @@
 
 - (void)loadSoundFile:(NSString*)filename
 {
+    self.filename = filename;
+    
     NSString *soundFile= [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
     CFURLRef soundURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, (CFStringRef)soundFile, kCFURLPOSIXPathStyle, false);
     CheckError(AudioFileOpenURL(soundURL, kAudioFileReadPermission, 0, &_soundDescription.playbackFile), "AudioFileOpenURL failed");
@@ -30,11 +32,23 @@
     UInt32 propSize = sizeof(_soundDescription.dataFormat);
     CheckError(AudioFileGetProperty(_soundDescription.playbackFile, kAudioFilePropertyDataFormat, &propSize, &_soundDescription.dataFormat), "Couldn't get file's data format");
     
+    //Wrap into an extended AudioFile object
+    ExtAudioFileRef exAudioFile;
+    CheckError(ExtAudioFileWrapAudioFileID(_soundDescription.playbackFile, FALSE, &exAudioFile), "Could not create extended audio file object.");
+    
+    //Trigger a read of the the frame count - this is necessary to get an accurate duration time from the kAudioFilePropertyEstimatedDuration value.
+    SInt64 frameCount;
+    UInt32 propSizeFrames = sizeof(frameCount);
+    CheckError(ExtAudioFileGetProperty(exAudioFile, kExtAudioFileProperty_FileLengthFrames, &propSizeFrames, &frameCount), "Could not get total frame count for file.");
+    
+    //Dispose of the extended file
+    ExtAudioFileDispose(exAudioFile);
+    
     // Get sound duration in seconds
-    CFTimeInterval seconds;
-    UInt32 propertySize = sizeof(seconds);
-    AudioFileGetProperty(_soundDescription.playbackFile, kAudioFilePropertyEstimatedDuration, &propertySize, &seconds);
-    self.mSoundDuration = seconds;
+    Float64 outDataSize = 0;
+    UInt32 thePropSize = sizeof(Float64);
+    AudioFileGetProperty(_soundDescription.playbackFile, kAudioFilePropertyEstimatedDuration, &thePropSize, &outDataSize);
+    self.mSoundDuration = outDataSize;
     
     // Figure out how big data buffer we need and how much bytes will be reading on each callback
     CalculateBytesForTime(_soundDescription.playbackFile, _soundDescription.dataFormat, kBufferSizeInSeconds, &_soundDescription.bufferByteSize, &_soundDescription.numPacketsToRead);

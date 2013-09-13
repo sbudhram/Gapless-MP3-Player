@@ -106,9 +106,12 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
     UInt32 numBytes;
     UInt32 nPackets = sound->numPacketsToRead;
     CheckError(AudioFileReadPackets(sound->playbackFile, false, &numBytes, sound->packetDescs, sound->packetPosition, &nPackets, inCompleteAQBuffer->mAudioData), "AudioFileReadPackets failed");
+    AudioPlayer *player = (__bridge AudioPlayer*)inUserData;
+    AudioSound *soundItem = currentAudioSound(player);
     
     if(nPackets > 0)
     {
+        
         // If there's more packets, read them
         inCompleteAQBuffer->mAudioDataByteSize = numBytes;
         AudioQueueEnqueueBuffer(inAQ, inCompleteAQBuffer, (sound->packetDescs?nPackets:0), sound->packetDescs);
@@ -116,7 +119,10 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
     }
     else
     {
-        AudioSound *soundItem = currentAudioSound((__bridge AudioPlayer*)inUserData);
+
+        //This sound has played through once.  Add its time to the total accumulated time.
+        player.accumulatedPlayTime += player.currentSound.mSoundDuration;
+        
         if(soundItem.loopCount == -1 || soundItem.loopCount > 0)
         {
             // If sound is done but it is looped, play it again
@@ -128,9 +134,6 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
         }
         else
         {
-            // Done with this sound
-            AudioPlayer *player = (__bridge AudioPlayer*)inUserData;
-            
             // Move to the next sound (if any)
             NSUInteger index = [player currentItemNumber];
             if ([player.soundQueue count] > index+1) {

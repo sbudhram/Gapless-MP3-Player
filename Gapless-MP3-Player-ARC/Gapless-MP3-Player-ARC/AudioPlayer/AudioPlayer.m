@@ -35,6 +35,7 @@ static AudioPlayer *sharedAudioPlayer = nil;
     self.queue = nil;
     self.volume = 1.0f;
     self.mMasterVolume = 1.0f;
+    self.accumulatedPlayTime = 0;
 
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stop) name:APEVENT_QUEUE_DONE object:self];
@@ -181,6 +182,8 @@ static AudioPlayer *sharedAudioPlayer = nil;
         for (AudioSound *item in _soundQueue)
             item.description->packetPosition = 0;
 
+        //Reset play time
+        self.accumulatedPlayTime = 0;
         
         [lock unlock];
     }
@@ -257,5 +260,36 @@ static AudioPlayer *sharedAudioPlayer = nil;
 -(NSUInteger)currentItemNumber {
     return [_soundQueue indexOfObject:_currentSound];
 }
+
+- (NSTimeInterval)totalPlayTime {
+
+    NSTimeInterval totalPlayTime = 0;
+    
+    //DEBUG: Print current play time.
+    AudioTimeStamp timestamp;
+    Boolean discontinuity;
+    
+    //Create timeline
+    UInt32 running;
+    UInt32 propertySize = sizeof(running);
+    AudioQueueGetProperty(_queue, kAudioQueueProperty_IsRunning, &running, &propertySize);
+    if (running) {
+        AudioQueueTimelineRef tRef;
+        OSStatus status = AudioQueueCreateTimeline(_queue, &tRef);
+        if (status == noErr) {
+            AudioQueueGetCurrentTime(_queue, tRef, &timestamp, &discontinuity);
+            totalPlayTime = timestamp.mSampleTime / _currentSound.soundDescription.dataFormat.mSampleRate;
+        }
+    }
+    return  totalPlayTime;
+}
+
+- (NSTimeInterval)currentSoundPlayTime {
+    
+    NSTimeInterval localPlayTime = [self totalPlayTime] - _accumulatedPlayTime;
+//    NSLog(@"Localized play time: %f", localPlayTime);
+    return localPlayTime;
+}
+
 
 @end
