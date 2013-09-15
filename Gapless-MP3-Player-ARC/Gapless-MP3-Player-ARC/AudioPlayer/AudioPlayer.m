@@ -35,7 +35,6 @@ static AudioPlayer *sharedAudioPlayer = nil;
     self.queue = nil;
     self.volume = 1.0f;
     self.mMasterVolume = 1.0f;
-    self.accumulatedPlayTime = 0;
 
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stop) name:APEVENT_QUEUE_DONE object:self];
@@ -90,6 +89,33 @@ static AudioPlayer *sharedAudioPlayer = nil;
     [_soundQueue addObject:sound];
 }
 
+- (void)setSoundFromFile:(NSString*)filename loop:(int)loop seek:(double)time {
+    for (AudioSound *sound in _soundQueue) {
+        if ([sound.filename isEqualToString:filename]) {
+            [self setSound:sound loop:loop seek:time];
+        }
+    }
+}
+
+- (void)setSound:(AudioSound*)sound loop:(int)loop seek:(double)time {
+    
+    //Convert this time into packets.
+    SInt64 packetPosition = sound.description->dataFormat.mSampleRate / sound.description->dataFormat.mFramesPerPacket;
+    
+    if (sound != _currentSound) {
+        _currentSound.description->packetPosition = packetPosition;
+    }
+    else {
+        //This sound is currently being played.
+        //It will need to update it's packet offset its next callback for buffer information.
+        //Set the desired start time by getting the queue's total play time and subtracting
+        //the incoming offset.
+        _currentSound.desiredStartTime = [self totalPlayTime] - time;
+    }
+    
+}
+
+
 - (void)clearQueue
 {
 
@@ -140,9 +166,6 @@ static AudioPlayer *sharedAudioPlayer = nil;
     // Copy magic cookie from file (it is providing a valuable information for the decoder)
     CopyEncoderCookieToQueue(currentSoundDescription(self)->playbackFile, _queue);
     
-    // Add any initial offset for the first sound to the accumulation queue
-    [self addOffsetForSound:_currentSound];
-    
     // Allocate bufers and fill them with data by using the callback that is reading portions of file from the disk.
     AudioQueueBufferRef buffers[kNumberPlaybackBuffers];
     int i;
@@ -185,9 +208,6 @@ static AudioPlayer *sharedAudioPlayer = nil;
         for (AudioSound *item in _soundQueue)
             item.description->packetPosition = 0;
 
-        //Reset play time
-        self.accumulatedPlayTime = 0;
-        
         [lock unlock];
     }
 }
@@ -264,27 +284,6 @@ static AudioPlayer *sharedAudioPlayer = nil;
     return [_soundQueue indexOfObject:_currentSound];
 }
 
-//When a song that has an offset is about to be played, this function makes sure
-// the offset is accounted for in the accumulated play time.
--(void)addOffsetForSound:(AudioSound*)sound {
-    
-    //Get variables
-    SInt64 packetPosition = sound.description->packetPosition;
-    Float64 framesPerSecond = sound.description->dataFormat.mSampleRate;
-    UInt32 framesPerPacket = sound.description->dataFormat.mFramesPerPacket;
-    
-    //Convert to seconds
-    Float64 secondsPerPacket = framesPerPacket / framesPerSecond;
-    Float64 seconds = secondsPerPacket * packetPosition;
-    
-    //Subtract this value from the accumulated play time.
-    // We are subtracting because totalPlayTime doesn't change - we have
-    // to instead account for this offset by subtracting it from the accumulated time,
-    // so the current offset is reported correctly.
-    self.accumulatedPlayTime -= seconds;
-
-}
-
 - (NSTimeInterval)totalPlayTime {
 
     NSTimeInterval totalPlayTime = 0;
@@ -311,8 +310,7 @@ static AudioPlayer *sharedAudioPlayer = nil;
 
 - (NSTimeInterval)currentSoundPlayTime {
     
-    NSTimeInterval localPlayTime = [self totalPlayTime] - _accumulatedPlayTime;
-//    NSLog(@"Localized play time: %f", localPlayTime);
+    NSTimeInterval localPlayTime = [self totalPlayTime] - _currentSound.startTime;
     return localPlayTime;
 }
 

@@ -27,7 +27,6 @@
 @property (nonatomic) AudioQueueRef queue;
 @property (nonatomic) NSMutableArray *soundQueue;
 @property (nonatomic) AudioSound *currentSound;
-@property (nonatomic) NSTimeInterval accumulatedPlayTime;  //Total play time not including the current sound's current playthrough
 @property (nonatomic, readonly) BOOL isPaused;      //Paused by the user
 @property (nonatomic, readonly) BOOL isPlaying;     //TRUE if if state is between playQueue and stop (even if audio is paused)
 @property (nonatomic) float volume;
@@ -54,6 +53,17 @@
 - (void)addSound:(AudioSound*)sound loop:(int)loop;
 - (void)addSound:(AudioSound*)sound loop:(int)loop seek:(double)time;
 
+// Use this to update an existing sound in the queue to a specific play time.
+// Only has an effect if a file with the given name is in the queue.
+// Operates on the first file with this name encountered in the queue.
+// ** NOTE: if this sound is currently playing, the effect is only heard when
+// all existing buffers have been played.
+- (void)setSoundFromFile:(NSString*)filename loop:(int)loop seek:(double)time;
+
+// Similar as above, but operates on a preexisting instance.
+- (void)setSound:(AudioSound*)sound loop:(int)loop seek:(double)time;
+
+
 - (void)clearQueue;
 
 // Control player
@@ -74,9 +84,6 @@
 - (NSUInteger)currentItemNumber;
 - (NSTimeInterval)totalPlayTime;
 - (NSTimeInterval)currentSoundPlayTime;
-
-//Private method, do not call
--(void)addOffsetForSound:(AudioSound*)sound;
 
 
 @end

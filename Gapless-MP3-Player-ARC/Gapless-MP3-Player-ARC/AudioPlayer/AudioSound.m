@@ -15,6 +15,7 @@
 - (id)initWithSoundFile:(NSString*)filename
 {
     self = [super init];
+    self.desiredStartTime = HUGE_VALF;
     [self loadSoundFile:filename];
     return self;
 }
@@ -40,6 +41,9 @@
     SInt64 frameCount;
     UInt32 propSizeFrames = sizeof(frameCount);
     CheckError(ExtAudioFileGetProperty(exAudioFile, kExtAudioFileProperty_FileLengthFrames, &propSizeFrames, &frameCount), "Could not get total frame count for file.");
+    
+    //Store the total number of packets
+    self.packetCount = frameCount / _soundDescription.dataFormat.mFramesPerPacket;
     
     //Dispose of the extended file
     ExtAudioFileDispose(exAudioFile);

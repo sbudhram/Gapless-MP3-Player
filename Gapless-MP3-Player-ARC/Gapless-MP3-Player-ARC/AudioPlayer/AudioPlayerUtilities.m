@@ -89,10 +89,10 @@ void AQPropertyListenerProc (void *inUserData, AudioQueueRef inAQ, AudioQueuePro
     UInt32 value;
     UInt32 size = sizeof(value);
     AudioQueueGetProperty(inAQ, kAudioQueueProperty_IsRunning, &value, &size);
+    AudioPlayer *player = (__bridge AudioPlayer*)inUserData;
     if(value == 0)
     {
         // This event should be catched by audio player to dispose the audio queue
-        AudioPlayer *player = (__bridge AudioPlayer*)inUserData;
         [[NSNotificationCenter defaultCenter] postNotificationName:APEVENT_QUEUE_DONE object:player];
     }
 }
@@ -112,17 +112,42 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
     if(nPackets > 0)
     {
         
+        //If a desired start time value has been set, compare it to the current start time.
+        //Adjust the packet position to account for this shift in time.
+        if (soundItem.desiredStartTime != HUGE_VALF) {
+            //Convert the time difference into packets and subtract the offset.
+            NSTimeInterval secDiff = soundItem.startTime - soundItem.desiredStartTime;
+            SInt64 packetDiff = (SInt64)round(secDiff * sound->dataFormat.mSampleRate / sound->dataFormat.mFramesPerPacket);
+            SInt64 newPacketPos = sound->packetPosition += packetDiff;
+            newPacketPos = MAX(0, MIN(soundItem.packetCount, newPacketPos));
+            sound->packetPosition = newPacketPos;
+            
+            soundItem.desiredStartTime = HUGE_VALF;
+        }
+        
         // If there's more packets, read them
         inCompleteAQBuffer->mAudioDataByteSize = numBytes;
-        AudioQueueEnqueueBuffer(inAQ, inCompleteAQBuffer, (sound->packetDescs?nPackets:0), sound->packetDescs);
+        AudioTimeStamp startTimestamp;
+        AudioQueueEnqueueBufferWithParameters(inAQ,
+                                              inCompleteAQBuffer,
+                                              (sound->packetDescs?nPackets:0),
+                                              sound->packetDescs,
+                                              0,
+                                              0,
+                                              0,
+                                              NULL,
+                                              NULL,
+                                              &startTimestamp);
+        
+        //Calculate the start time if the packet position is non-zero.
+        NSTimeInterval secOffset = sound->packetPosition * sound->dataFormat.mFramesPerPacket / sound->dataFormat.mSampleRate;
+        currentAudioSound(player).startTime = startTimestamp.mSampleTime / sound->dataFormat.mSampleRate - secOffset;
+        
         sound->packetPosition += nPackets;
     }
     else
     {
 
-        //This sound has played through once.  Add its time to the total accumulated time.
-        player.accumulatedPlayTime += player.currentSound.mSoundDuration;
-        
         if(soundItem.loopCount == -1 || soundItem.loopCount > 0)
         {
             // If sound is done but it is looped, play it again
@@ -139,9 +164,6 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
             if ([player.soundQueue count] > index+1) {
 
                 player.currentSound = player.soundQueue[index+1];
-                
-                //Add any offset for this sound to the accumulation queue.
-                [player addOffsetForSound:player.currentSound];
                 
                 // Copy new magic cookie to the queue
                 CopyEncoderCookieToQueue(currentSoundDescription(player)->playbackFile, inAQ);
