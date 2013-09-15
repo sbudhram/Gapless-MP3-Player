@@ -140,6 +140,9 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
 
                 player.currentSound = player.soundQueue[index+1];
                 
+                //Add any offset for this sound to the accumulation queue.
+                [player addOffsetForSound:player.currentSound];
+                
                 // Copy new magic cookie to the queue
                 CopyEncoderCookieToQueue(currentSoundDescription(player)->playbackFile, inAQ);
                 

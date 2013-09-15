@@ -140,6 +140,9 @@ static AudioPlayer *sharedAudioPlayer = nil;
     // Copy magic cookie from file (it is providing a valuable information for the decoder)
     CopyEncoderCookieToQueue(currentSoundDescription(self)->playbackFile, _queue);
     
+    // Add any initial offset for the first sound to the accumulation queue
+    [self addOffsetForSound:_currentSound];
+    
     // Allocate bufers and fill them with data by using the callback that is reading portions of file from the disk.
     AudioQueueBufferRef buffers[kNumberPlaybackBuffers];
     int i;
@@ -259,6 +262,27 @@ static AudioPlayer *sharedAudioPlayer = nil;
 
 -(NSUInteger)currentItemNumber {
     return [_soundQueue indexOfObject:_currentSound];
+}
+
+//When a song that has an offset is about to be played, this function makes sure
+// the offset is accounted for in the accumulated play time.
+-(void)addOffsetForSound:(AudioSound*)sound {
+    
+    //Get variables
+    SInt64 packetPosition = sound.description->packetPosition;
+    Float64 framesPerSecond = sound.description->dataFormat.mSampleRate;
+    UInt32 framesPerPacket = sound.description->dataFormat.mFramesPerPacket;
+    
+    //Convert to seconds
+    Float64 secondsPerPacket = framesPerPacket / framesPerSecond;
+    Float64 seconds = secondsPerPacket * packetPosition;
+    
+    //Subtract this value from the accumulated play time.
+    // We are subtracting because totalPlayTime doesn't change - we have
+    // to instead account for this offset by subtracting it from the accumulated time,
+    // so the current offset is reported correctly.
+    self.accumulatedPlayTime -= seconds;
+
 }
 
 - (NSTimeInterval)totalPlayTime {

@@ -75,5 +75,8 @@
 - (NSTimeInterval)totalPlayTime;
 - (NSTimeInterval)currentSoundPlayTime;
 
+//Private method, do not call
+-(void)addOffsetForSound:(AudioSound*)sound;
+
 
 @end
