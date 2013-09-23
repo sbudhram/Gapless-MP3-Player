@@ -110,7 +110,8 @@ static AudioPlayer *sharedAudioPlayer = nil;
         //It will need to update it's packet offset its next callback for buffer information.
         //Set the desired start time by getting the queue's total play time and subtracting
         //the incoming offset.
-        _currentSound.desiredStartTime = [self totalPlayTime] - time;
+        NSTimeInterval totalPlayTime = [self totalPlayTime];
+        _currentSound.desiredStartTime = totalPlayTime - time;
     }
     
 }

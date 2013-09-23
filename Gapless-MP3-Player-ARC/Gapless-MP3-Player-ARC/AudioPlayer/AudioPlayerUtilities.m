@@ -119,8 +119,16 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
             NSTimeInterval secDiff = soundItem.startTime - soundItem.desiredStartTime;
             SInt64 packetDiff = (SInt64)round(secDiff * sound->dataFormat.mSampleRate / sound->dataFormat.mFramesPerPacket);
             SInt64 newPacketPos = sound->packetPosition += packetDiff;
-            newPacketPos = MAX(0, MIN(soundItem.packetCount, newPacketPos));
+
+            //If this packet position is less than 0 or greater than the number of packets in the sound,
+            // cycle it.
+            if (newPacketPos < 0)
+                newPacketPos = soundItem.packetCount + newPacketPos;
+            else if (newPacketPos >= soundItem.packetCount)
+                newPacketPos = newPacketPos - soundItem.packetCount;
+            
             sound->packetPosition = newPacketPos;
+//            NSLog(@"*** TIME SHIFT DETECTED *** shifting by %f seconds (%lli packets)", secDiff, packetDiff);
             
             soundItem.desiredStartTime = HUGE_VALF;
         }
