@@ -274,7 +274,9 @@ static AudioPlayer *sharedAudioPlayer = nil;
 - (void)setMasterVolume:(float)volume
 {
     _mMasterVolume = volume;
-    _volume = volume;
+    
+    //Trigger a volume update
+    self.volume = _volume;
 }
 - (float)getMasterVolume
 {
