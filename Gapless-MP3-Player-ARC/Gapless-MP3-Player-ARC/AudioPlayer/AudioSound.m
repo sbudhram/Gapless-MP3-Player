@@ -85,7 +85,7 @@
     AudioFileClose(_soundDescription.playbackFile);
 }
 
-- (SoundDescription*)description
+- (SoundDescription*)sndDescription
 {
     return &_soundDescription;
 }

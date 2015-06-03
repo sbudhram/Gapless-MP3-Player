@@ -26,5 +26,5 @@
 - (id)initWithSoundFile:(NSString*)filename;
 - (void)loadSoundFile:(NSString*)filename;
 -(void)seekToTime:(double)time;
-- (SoundDescription*)description;
+- (SoundDescription*)sndDescription;
 @end

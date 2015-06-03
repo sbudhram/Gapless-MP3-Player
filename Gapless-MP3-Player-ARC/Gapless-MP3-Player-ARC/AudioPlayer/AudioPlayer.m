@@ -89,21 +89,25 @@ static AudioPlayer *sharedAudioPlayer = nil;
     [_soundQueue addObject:sound];
 }
 
-- (void)setSoundFromFile:(NSString*)filename loop:(int)loop seek:(double)time {
+- (BOOL)setSoundFromFile:(NSString*)filename loop:(int)loop seek:(double)time {
     for (AudioSound *sound in _soundQueue) {
         if ([sound.filename isEqualToString:filename]) {
             [self setSound:sound loop:loop seek:time];
+            return TRUE;
         }
     }
+    
+    return FALSE;
+
 }
 
 - (void)setSound:(AudioSound*)sound loop:(int)loop seek:(double)time {
     
     //Convert this time into packets.
-    SInt64 packetPosition = sound.description->dataFormat.mSampleRate / sound.description->dataFormat.mFramesPerPacket;
+    SInt64 packetPosition = sound.sndDescription->dataFormat.mSampleRate / sound.sndDescription->dataFormat.mFramesPerPacket;
     
     if (sound != _currentSound) {
-        _currentSound.description->packetPosition = packetPosition;
+        _currentSound.sndDescription->packetPosition = packetPosition;
     }
     else {
         //This sound is currently being played.
@@ -125,7 +129,12 @@ static AudioPlayer *sharedAudioPlayer = nil;
 }
 
 // Control player
-- (void)playQueue
+-(void)playQueue {
+    [self prebufferQueue];
+    [self play];
+}
+
+- (void)prebufferQueue
 {
     if(_queue != nil) return; // Another queue is already playing
     if(_soundQueue.count == 0)
@@ -140,9 +149,9 @@ static AudioPlayer *sharedAudioPlayer = nil;
     }
     
     // Check if all sounds in the queue have the same format and parameters
-    AudioStreamBasicDescription *ethalonDesc = &self.currentSound.description->dataFormat;
+    AudioStreamBasicDescription *ethalonDesc = &self.currentSound.sndDescription->dataFormat;
     for (AudioSound *item in _soundQueue) {
-        AudioStreamBasicDescription *desc = &item.description->dataFormat;
+        AudioStreamBasicDescription *desc = &item.sndDescription->dataFormat;
         bool isNotSame = NO;
         isNotSame |= (desc->mBytesPerFrame != ethalonDesc->mBytesPerFrame);
         isNotSame |= (desc->mBytesPerPacket != ethalonDesc->mBytesPerPacket);
@@ -179,10 +188,16 @@ static AudioPlayer *sharedAudioPlayer = nil;
     // Set audio queue volume
     AudioQueueSetParameter(_queue, kAudioQueueParam_Volume, _mMasterVolume*_volume);
     
+}
+
+-(void)play {
+
     // Play
     CheckError(AudioQueueStart(_queue, NULL), "AudioQueueStart failed");
     _isPlaying = YES;
+    
 }
+
 - (void)stop
 {
     NSLock *lock = [[NSLock alloc] init];
@@ -207,7 +222,7 @@ static AudioPlayer *sharedAudioPlayer = nil;
         
         //Rewind all packets to start
         for (AudioSound *item in _soundQueue)
-            item.description->packetPosition = 0;
+            item.sndDescription->packetPosition = 0;
 
         [lock unlock];
     }

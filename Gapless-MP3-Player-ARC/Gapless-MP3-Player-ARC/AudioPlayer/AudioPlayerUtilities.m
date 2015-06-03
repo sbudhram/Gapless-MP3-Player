@@ -19,7 +19,7 @@ AudioSound* currentAudioSound(AudioPlayer *player)
 
 SoundDescription* currentSoundDescription(AudioPlayer *player)
 {
-    return currentAudioSound(player).description;
+    return currentAudioSound(player).sndDescription;
 }
 
 void CheckError(OSStatus error, const char *operation)
@@ -36,8 +36,8 @@ void CheckError(OSStatus error, const char *operation)
     else
         sprintf(errorString, "%d", (int)error);
     
-    fprintf(stderr, "Error: %s (%s)\n", operation, errorString);
-    exit(1);
+    NSLog(@"WARNING: Music: Error: %s (%s)\n", operation, errorString);
+
 }
 
 // Set up a "magic cookie" - a format related information for Audio Queue that helps to determine how to decode the audio data
@@ -103,9 +103,18 @@ void AQOutputCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBufferRef 
     SoundDescription *sound = currentSoundDescription((__bridge AudioPlayer*)inUserData);
     if(sound == nil) return;
     
-    UInt32 numBytes;
+    UInt32 numBytes = inCompleteAQBuffer->mAudioDataBytesCapacity;
     UInt32 nPackets = sound->numPacketsToRead;
-    CheckError(AudioFileReadPackets(sound->playbackFile, false, &numBytes, sound->packetDescs, sound->packetPosition, &nPackets, inCompleteAQBuffer->mAudioData), "AudioFileReadPackets failed");
+
+    CheckError(AudioFileReadPacketData(sound->playbackFile,
+                                       false,
+                                       &numBytes,
+                                       sound->packetDescs,
+                                       sound->packetPosition,
+                                       &nPackets,
+                                       inCompleteAQBuffer->mAudioData),
+               "AudioFileReadPackets failed");
+
     AudioPlayer *player = (__bridge AudioPlayer*)inUserData;
     AudioSound *soundItem = currentAudioSound(player);
     
